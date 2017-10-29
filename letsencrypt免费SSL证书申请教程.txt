@@ -1,0 +1,46 @@
+目前越来越多的网站开始支持SSL即https方式，这主要是出于安全因素考虑的。有很多的主机服务商也在提供ssl证书服务，虽然很多都是收费的。目前Let’s Encrypt向大家免费提供SSL证书服务，虽然是免费，但是可用性很好，基本都被支持了。此前发生过谷歌宣布不信任赛门铁克签发的SSL证书的事件，大家都还记得吧？
+
+Let’s Encrypt的证书有效期为90天，虽然很短，但是到期会自动续约，所以依然很方便。
+
+在申请ssl证书之前，我们需要将要申请证书的域名解析到你的VPS，并且安装python和git工具环境。然后就可以申请证书了，非常简单。
+
+1、一键申请证书，执行以下命令
+
+git clone https://github.com/letsencrypt/letsencrypt
+cd letsencrypt
+./letsencrypt-auto certonly –standalone –email 你的邮箱 -d 你的域名1 -d 你的域名2
+
+非常简单，需要填写你的邮箱和域名。域名可同时填入多个。
+
+很快，SSL证书就申请成功了。
+
+2、使用ssl证书
+
+申请完毕后，let’s encrypt会在”/etc/letsencrypt/live/你的域名/”目录生成4个pem文件，
+cert.pem
+chain.pem
+fullchain.pem
+privkey.pem
+
+这4个文件用途不同，大部分环境只需要其中2-3个文件即可。
+
+例如以nginx为例，我们部署证书只需要cert.pem和privkey.pem。
+
+如果我们想对某个网站开启ssl证书，只需要找到nginx文件夹中相应网站的conf文件，填入下面红色的部分即可。
+
+server
+{
+listen 80;
+listen 443 ssl;
+
+ssl_certificate /etc/letsencrypt/live/你的域名/cert.pem;
+ssl_certificate_key /etc/letsencrypt/live/你的域名/privkey.pem;
+server_name  你的域名;
+
+如果不希望开放http访问，直接删除listen 80;即可。
+
+3、证书续期
+
+只需要在有效期快结束时运行下面的命令即可。
+
+./letsencrypt-auto certonly –renew-by-default –email 你的邮箱 -d 你的域名
