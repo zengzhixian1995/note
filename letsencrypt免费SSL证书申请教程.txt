@@ -11,7 +11,6 @@ cd letsencrypt
 ./letsencrypt-auto certonly –standalone –email 你的邮箱 -d 你的域名1 -d 你的域名2
 
 非常简单，需要填写你的邮箱和域名。域名可同时填入多个。
-
 很快，SSL证书就申请成功了。
 
 2、使用ssl证书
